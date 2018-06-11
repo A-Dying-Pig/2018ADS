@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import os
 from PIL import Image
+from sklearn.neighbors import NearestNeighbors
 import glob
 import matplotlib.pyplot as plt
 
@@ -75,10 +76,26 @@ def straight_search(vector,total_len,target_vector):
     #print(nearest)
     return nearest
 
+def kdtree_search(vector,total_len,target_vector):
+    ve = []
+    ve.append(target_vector)
+    for i in range(total_len):
+        ve.append(vector[i])
+    nbrs = NearestNeighbors(n_neighbors = k + 1, algorithm="kd_tree").fit(ve)
+    distances, indices = nbrs.kneighbors(ve)
+    nearest = []
+    for i in range(k):
+        nearest.append([indices[0,1:][i] - 1,0])
+    #print(indices[0,1:])
+    #print(nearest)
+    return nearest
+
+#------------------------------------------------main-------------------------------------------
 delete_image()
 resize_image()
 create_graph()
 name,vector,total_len = read_features()
+#print(total_len)
 
 with tf.Session() as sess:
     softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
@@ -90,8 +107,12 @@ with tf.Session() as sess:
                 image_data = tf.gfile.FastGFile(os.path.join(root, file), 'rb').read()
                 predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data})
                 predictions = np.squeeze(predictions)
-                nearest = straight_search(vector,total_len,predictions)
 
+                #-----Method 1 to get K nearest neighbors-----straight research
+                #nearest = straight_search(vector,total_len,predictions)
+                #-----Method 2 ------- kd tree
+                nearest = kdtree_search(vector,total_len,predictions)
+                #-----Method 3 ------- hash
                 output.write(file+":")
 
                 for i in range(k):
