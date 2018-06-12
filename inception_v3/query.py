@@ -97,7 +97,7 @@ def getLSH(onevector, k):
     result = 0
     for index in range(len(onevector)):
         #这里还要改进分布的离散程度,哈希方法
-        temp = int(pow((17 * index + onevector[index]), 2) % 233)
+        temp = onevector[index] * 10 + index
         tempresult.append(temp)
     for alpha in range(0, 8):
         test = 0;
@@ -109,6 +109,13 @@ def getLSH(onevector, k):
             test += k[index] * delta
         if(test > 0):
             result += pow(2, alpha)
+    return result
+
+def getDistance(onevector, anothervector, deminsion):
+    result = 0
+    for i in range(deminsion):
+        result += math.pow(onevector[i] - anothervector[i], 2)
+    result = math.sqrt(result)
     return result
 
 def getNewVector(characters, total_len, deminsion):
@@ -161,6 +168,30 @@ def hash_search(hash, k, total_len, deminsion, predictions):
         result.append(hash[tempresult][index])
     return result
 
+def getKfromResult(result, vector, predictions, k, deminsion):
+    trueResult = []
+    reallyTrueResult = []
+    for index in range(len(result)):
+        tempresult = []
+        tempresult.append(result[index])
+        tempresult.append(getDistance(vector[result[index]], predictions, deminsion))
+        trueResult.append(tempresult)
+    trueResult.sort(key = lambda x:x[1])
+    if(len(result) < k):
+        k = len(result)
+    for i in range(k):
+        reallyTrueResult.append(trueResult[i][0])
+    return reallyTrueResult
+
+def method3_search(vector, total_len, predictions):
+    newvector, scales = getNewVector(vector, total_len, 10)
+    newprediction = getNewPredictions(predictions, scales, 10)
+    myk = [1] * 10
+    my_hash = create_hash(newvector, myk, total_len)
+    method3result = hash_search(my_hash, myk, total_len, 10, newprediction)
+    kResult = getKfromResult(method3result, vector, predictions, 10, 10)
+    return kResult
+
 
 #------------------------------------------------main-------------------------------------------
 delete_image()
@@ -185,14 +216,7 @@ with tf.Session() as sess:
                 #-----Method 2 ------- kd tree
                 #nearest = kdtree_search(vector,total_len,predictions)
                 #-----Method 3 ------- hash
-
-                newvector, scales = getNewVector(vector, total_len, 10)
-                newprediction = getNewPredictions(predictions, scales, 10)
-                myk = [1] * 10
-
-                my_hash = create_hash(newvector, myk, total_len)
-                method3result = hash_search(my_hash, myk, total_len, 10, newprediction)
-                print(method3result)
+                kResult = method3_search(vector, total_len, predictions)
 
                 output.write(file+",")
 
@@ -202,5 +226,9 @@ with tf.Session() as sess:
                     else:
                         output.write(name[nearest[i][0]]+";")
                 
-                
+                for i in range(k):
+                    if i == k - 1:
+                        output.write(name[kResult[i]]+"\n")
+                    else:
+                        output.write(name[kResult[i]]+",")
 
