@@ -1,4 +1,5 @@
-You are required to install following packages:
+You are required to install:
+----"python 3.x"
 ----"tensorflow"
 ----"matplotlib"
 ----"sklearn"
