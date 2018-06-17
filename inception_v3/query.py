@@ -212,25 +212,25 @@ with tf.Session() as sess:
                 predictions = np.squeeze(predictions)
 
                 #-----Method 1 to get K nearest neighbors-----straight research
-                #nearest = straight_search(vector,total_len,predictions)
+                nearest = straight_search(vector,total_len,predictions)
                 #-----Method 2 ------- kd tree
                 #nearest = kdtree_search(vector,total_len,predictions)
                 #-----Method 3 ------- hash
-                kResult = method3_search(vector, total_len, predictions)
+                #kResult = method3_search(vector, total_len, predictions)
 
                 output.write(file+":")
 
                 #Method1/2-----output---------
-                #for i in range(k):
-                #    if i == k - 1:
-                #        output.write(name[nearest[i][0]]+"\n")
-                #    else:
-                #        output.write(name[nearest[i][0]]+",")
+                for i in range(k):
+                    if i == k - 1:
+                        output.write(name[nearest[i][0]]+"\n")
+                    else:
+                        output.write(name[nearest[i][0]]+",")
                 
                 #-----Method3---output----hash-----
-                for i in range(k):
-                    if i == k - 1: 
-                        output.write(name[kResult[i]]+"\n")
-                    else:
-                        output.write(name[kResult[i]]+",")
+                #for i in range(k):
+                #    if i == k - 1: 
+                #        output.write(name[kResult[i]]+"\n")
+                #   else:
+                #        output.write(name[kResult[i]]+",")
 
