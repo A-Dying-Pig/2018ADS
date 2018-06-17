@@ -231,6 +231,6 @@ with tf.Session() as sess:
                 #for i in range(k):
                 #    if i == k - 1: 
                 #        output.write(name[kResult[i]]+"\n")
-                #   else:
+                #    else:
                 #        output.write(name[kResult[i]]+",")
 
