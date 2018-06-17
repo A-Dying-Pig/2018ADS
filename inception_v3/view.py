@@ -40,10 +40,10 @@ def view():
 		total_len = len(lines)
 		i = 0
 		while 1:
-			origin = lines[i].split(",")[0]
-			n1 = lines[i].split(",")[1]
+			origin = lines[i].split(":")[0]
+			n1 = lines[i].split(":")[1]
 			n = n1.split("\n")[0]
-			name = [x for x in n.split(';')]
+			name = [x for x in n.split(',')]
 			image = image_union(origin,name)
 			plt.imshow(image)
 			plt.axis('off')
