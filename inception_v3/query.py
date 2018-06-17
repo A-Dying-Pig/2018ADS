@@ -233,4 +233,4 @@ with tf.Session() as sess:
                         output.write(name[kResult[i]]+"\n")
                     else:
                         output.write(name[kResult[i]]+",")
-                
+
